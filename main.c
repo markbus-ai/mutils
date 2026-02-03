@@ -1,6 +1,7 @@
 // main.c
 #include "mutils.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 int main(int argc, char *argv[]) {
@@ -17,8 +18,26 @@ int main(int argc, char *argv[]) {
       return 1;
     }
     run_port_slayer(argv[2]);
-  } else {
-    printf("Comando '%s' no reconocido.\n", argv[1]);
+  }
+  if (strcmp(argv[1], "bat") == 0) {
+    if (strcmp(argv[2], "health") == 0) {
+      run_bat_health();
+      return 0;
+    }
+    if (argc < 3) {
+      printf("Error: Falta especificar el porcentaje.\n");
+      return 1;
+    }
+    int max = atoi(argv[2]);
+    run_bat_threshold(&max);
+  }
+  if (strcmp(argv[1], "nuke") == 0) {
+    if (argc < 3) {
+      printf("Error: Falta especificar el path.\n");
+      return 1;
+    }
+
+    run_nuke_dev(argv[2]);
   }
 
   return 0;
