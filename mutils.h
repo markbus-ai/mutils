@@ -6,4 +6,5 @@ void run_port_slayer(char *port);
 void run_bat_threshold(int *max);
 void run_bat_health();
 void run_nuke_dev(char *path);
+void run_env_check();
 #endif

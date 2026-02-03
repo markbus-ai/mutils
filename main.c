@@ -39,6 +39,9 @@ int main(int argc, char *argv[]) {
 
     run_nuke_dev(argv[2]);
   }
+  if (strcmp(argv[1], "env") == 0) {
+    run_env_check();
+  }
 
   return 0;
 }
