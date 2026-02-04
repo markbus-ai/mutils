@@ -7,4 +7,5 @@ void run_bat_threshold(int *max);
 void run_bat_health();
 void run_nuke_dev(char *path);
 void run_env_check();
+void run_ping_check();
 #endif
