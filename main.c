@@ -42,6 +42,10 @@ int main(int argc, char *argv[]) {
   if (strcmp(argv[1], "env") == 0) {
     run_env_check();
   }
+  if (strcmp(argv[1], "ip") == 0) {
+    run_myip();
+    return 0;
+  }
   if (strcmp(argv[1], "ping") == 0) {
 
     run_ping_check();
