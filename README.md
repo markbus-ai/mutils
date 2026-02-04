@@ -93,6 +93,13 @@ mutils ip
 # Salida: Public IP: 203.0.113.45
 ```
 
+### 📦 `x` - Smart Extract
+Descompresor inteligente que detecta automáticamente el formato del archivo y utiliza la herramienta adecuada (`tar`, `unzip`, `unrar`, `7z`, etc.). Soporta casi todos los formatos comunes (`.zip`, `.tar.gz`, `.rar`, `.7z`, `.bz2`, etc.).
+
+```bash
+mutils x archivo.tar.gz
+```
+
 ## 🛠️ Desarrollo
 
 El proyecto está estructurado modularmente en la carpeta `tools/`.

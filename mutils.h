@@ -9,4 +9,5 @@ void run_nuke_dev(char *path);
 void run_env_check();
 void run_ping_check();
 void run_myip();
+void run_extract(const char *filename);
 #endif

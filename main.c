@@ -52,4 +52,11 @@ int main(int argc, char *argv[]) {
 
     return 0;
   }
+  if (strcmp(argv[1], "x") == 0) {
+    if (argc < 3) {
+      printf("Error: Falta especificar el archivo.\n");
+      return 1;
+    }
+    run_extract(argv[2]);
+  }
 }
