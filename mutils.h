@@ -10,4 +10,5 @@ void run_env_check();
 void run_ping_check();
 void run_myip();
 void run_extract(const char *filename);
+void run_ocr();
 #endif

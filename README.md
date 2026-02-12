@@ -20,9 +20,34 @@ Su objetivo es reemplazar scripts de shell complejos o comandos repetitivos con 
 
 3. (Opcional) Agrega el binario a tu PATH o crea un alias para usarlo globalmente.
 
+## 📦 Dependencias
+
+Para compilar y ejecutar todas las herramientas, necesitarás instalar las siguientes librerías y utilidades.
+
+**Bibliotecas de desarrollo (Build-time):**
+*   `tesseract` (libtesseract-dev / tesseract-ocr)
+*   `leptonica` (libleptonica-dev / leptonica)
+*   `libcurl` (libcurl4-openssl-dev)
+*   `libarchive` (libarchive-dev)
+
+**Herramientas del sistema (Run-time):**
+*   `wl-clipboard` (para copiar al portapapeles en Wayland)
+*   `grim` y `slurp` (para capturas de pantalla en Wayland - requerido por `ocr`)
+
 ## 📖 Uso y Comandos
 
 El formato general es: `mutils <comando> [argumentos]`
+
+### 👁️ `ocr` - Captura de Texto (Wayland)
+Selecciona un área de la pantalla, extrae el texto mediante OCR y lo copia automáticamente al portapapeles. Ideal para extraer código de videos o texto de imágenes no seleccionables.
+
+*Requiere un entorno Wayland con `grim`, `slurp` y `wl-copy` instalados.*
+
+```bash
+mutils ocr
+# 1. El cursor cambiará para seleccionar una región.
+# 2. El texto detectado se copiará al clipboard.
+```
 
 ### 🔋 `bat` - Gestión de Batería
 Herramientas para monitorear la salud y controlar los umbrales de carga (ideal para laptops modernas como ThinkPads, ASUS, etc. para extender la vida útil de la batería).

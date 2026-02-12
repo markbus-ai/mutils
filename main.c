@@ -59,4 +59,8 @@ int main(int argc, char *argv[]) {
     }
     run_extract(argv[2]);
   }
+  if (strcmp(argv[1], "ocr") == 0) {
+    run_ocr();
+  }
+  return 0;
 }

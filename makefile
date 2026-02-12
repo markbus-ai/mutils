@@ -1,35 +1,25 @@
 # 1. Variables de configuración ⚙️
 CC = gcc
-CFLAGS = -Wall -Wextra -g
+# flags para encontrar los headers (.h)
+CFLAGS = -Wall -Wextra -g $(shell pkg-config --cflags tesseract lept)
+# flags para linkear las librerías (.so / .a)
+LDFLAGS = $(shell pkg-config --libs tesseract lept)
+
 TARGET = mutils
 
 # 2. Archivos fuente y objetos 📂
-# Usamos wildcard para agarrar todos los .c en la carpeta tools
 SRC = main.c $(wildcard tools/*.c)
-# Transformamos los nombres .c en .o (objetos)
 OBJ = $(SRC:.c=.o)
 
 # 3. Regla principal (el "plato final") 🍽️
 $(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ) $(LDFLAGS)
 
-# 4. Regla para limpiar los archivos temporales 🧹
-clean:
-	rm -f $(OBJ) $(TARGET)# 1. Variables de configuración ⚙️
-CC = gcc
-CFLAGS = -Wall -Wextra -g
-TARGET = mutils
+# 4. Regla para compilar cada .c a .o
+# esto asegura que los flags se usen en cada archivo de tools/
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# 2. Archivos fuente y objetos 📂
-# Usamos wildcard para agarrar todos los .c en la carpeta tools
-SRC = main.c $(wildcard tools/*.c)
-# Transformamos los nombres .c en .o (objetos)
-OBJ = $(SRC:.c=.o)
-
-# 3. Regla principal (el "plato final") 🍽️
-$(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
-
-# 4. Regla para limpiar los archivos temporales 🧹
+# 5. Limpiar 🧹
 clean:
 	rm -f $(OBJ) $(TARGET)
