@@ -1,3 +1,4 @@
+#include "../mutils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,21 +21,26 @@ void run_extract(const char *filename) {
     return;
   }
 
-  char cmd[1024];
   const char *tool = NULL;
+  char *prog = NULL;
+  char *argv[5]; // Suficiente para los comandos usados
 
   // --- GRUPO TAR (Prioridad Alta: extensiones compuestas) ---
   if (ends_with(filename, ".tar.gz") || ends_with(filename, ".tgz")) {
-    snprintf(cmd, sizeof(cmd), "tar -xzvf \"%s\"", filename);
+    prog = "tar";
+    argv[0] = "tar"; argv[1] = "-xzvf"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "tar (gzip)";
   } else if (ends_with(filename, ".tar.bz2") || ends_with(filename, ".tbz2")) {
-    snprintf(cmd, sizeof(cmd), "tar -xjvf \"%s\"", filename);
+    prog = "tar";
+    argv[0] = "tar"; argv[1] = "-xjvf"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "tar (bzip2)";
   } else if (ends_with(filename, ".tar.xz") || ends_with(filename, ".txz")) {
-    snprintf(cmd, sizeof(cmd), "tar -xJvf \"%s\"", filename);
+    prog = "tar";
+    argv[0] = "tar"; argv[1] = "-xJvf"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "tar (xz)";
   } else if (ends_with(filename, ".tar")) {
-    snprintf(cmd, sizeof(cmd), "tar -xvf \"%s\"", filename);
+    prog = "tar";
+    argv[0] = "tar"; argv[1] = "-xvf"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "tar";
   }
 
@@ -42,38 +48,44 @@ void run_extract(const char *filename) {
   else if (ends_with(filename, ".zip") || ends_with(filename, ".jar") ||
            ends_with(filename, ".war")) {
     // .jar y .war son zips glorificados
-    snprintf(cmd, sizeof(cmd), "unzip \"%s\"", filename);
+    prog = "unzip";
+    argv[0] = "unzip"; argv[1] = (char *)filename; argv[2] = NULL;
     tool = "unzip";
   } else if (ends_with(filename, ".rar")) {
     // Requiere 'unrar' instalado (sudo apt install unrar)
-    snprintf(cmd, sizeof(cmd), "unrar x \"%s\"", filename);
+    prog = "unrar";
+    argv[0] = "unrar"; argv[1] = "x"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "unrar";
   } else if (ends_with(filename, ".7z")) {
     // Requiere 'p7zip-full'
-    snprintf(cmd, sizeof(cmd), "7z x \"%s\"", filename);
+    prog = "7z";
+    argv[0] = "7z"; argv[1] = "x"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "7zip";
   }
 
   // --- GRUPO ARCHIVOS ÚNICOS (No son carpetas empaquetadas) ---
   else if (ends_with(filename, ".gz")) {
-    snprintf(cmd, sizeof(cmd), "gunzip -k \"%s\"",
-             filename); // -k: keep original
+    prog = "gunzip";
+    argv[0] = "gunzip"; argv[1] = "-k"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "gunzip";
   } else if (ends_with(filename, ".bz2")) {
-    snprintf(cmd, sizeof(cmd), "bunzip2 -k \"%s\"", filename);
+    prog = "bunzip2";
+    argv[0] = "bunzip2"; argv[1] = "-k"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "bunzip2";
   } else if (ends_with(filename, ".xz")) {
-    snprintf(cmd, sizeof(cmd), "unxz -k \"%s\"", filename);
+    prog = "unxz";
+    argv[0] = "unxz"; argv[1] = "-k"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "unxz";
   } else if (ends_with(filename, ".Z")) {
-    snprintf(cmd, sizeof(cmd), "uncompress \"%s\"", filename);
+    prog = "uncompress";
+    argv[0] = "uncompress"; argv[1] = (char *)filename; argv[2] = NULL;
     tool = "uncompress";
   }
 
   // --- EJECUCIÓN ---
-  if (tool) {
+  if (prog) {
     printf("Extrayendo [%s] usando %s...\n", filename, tool);
-    int status = system(cmd);
+    int status = run_cmd(prog, argv);
 
     if (status != 0) {
       printf("Falló la extracción. ¿Tenés instalado '%s'?\n", tool);

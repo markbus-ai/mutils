@@ -1,3 +1,4 @@
+#include "../mutils.h"
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,12 +79,11 @@ void run_nuke_dev(char *path) {
 
     // 2. Chequear si es basura conocida
     if (is_trash(entry->d_name, es_dir)) {
-      char comando[1100];
       printf("Nukeando: %s\n", ruta_completa);
 
       // Usamos rm -rf para asegurar borrado recursivo de carpetas basura
-      sprintf(comando, "rm -rf \"%s\"", ruta_completa);
-      system(comando);
+      char *args[] = {"rm", "-rf", ruta_completa, NULL};
+      run_cmd("rm", args);
 
       // Si borramos la carpeta, NO intentamos entrar (recursesión) en ella
       continue;

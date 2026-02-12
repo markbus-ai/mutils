@@ -1,45 +1,43 @@
+#include "../mutils.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 void run_bat_threshold(int *max) {
-  char comando[256]; // Un tamaño generoso para un comando largo
-  sprintf(comando,
-          "echo 'ACTION==\"add|change\", SUBSYSTEM==\"power_supply\", "
-          "KERNEL==\"BAT0\", ATTR{charge_control_end_threshold}=\"%d\"' | sudo "
-          "tee /etc/udev/rules.d/99-battery-threshold.rules",
-          *max);
-
-  int status = system(comando);
-  if (status == -1) {
-    printf("Error fatal al ejecutar udev seter: %s\n", strerror(errno));
+  if (geteuid() != 0) {
+    fprintf(stderr, "Error: Este comando requiere privilegios de root.\n");
+    fprintf(stderr, "Por favor, ejecutalo con sudo: sudo mutils bat %d\n", *max);
     return;
-  } else if (WEXITSTATUS(status) != 0) {
-    printf("Error al ejecutar udevadm: %s\n", strerror(errno));
-    return;
-  } else {
-    int status_reload = system("sudo udevadm control --reload-rules");
-    if (status_reload == -1) {
-      printf("Error fatal al ejecutar udevadm: %s\n", strerror(errno));
-      return;
-    } else if (WEXITSTATUS(status_reload) != 0) {
-      printf("Error al ejecutar udevadm: %s\n", strerror(errno));
-      return;
-    }
-
-    int status_trigger = system("sudo udevadm trigger");
-    if (status_trigger == -1) {
-      printf("Error fatal al ejecutar udevadm: %s\n", strerror(errno));
-      return;
-    } else if (WEXITSTATUS(status_trigger) != 0) {
-      printf("Error al ejecutar udevadm: %s\n", strerror(errno));
-      return;
-    }
-
-    printf("Udevadm exitoso\n");
   }
+
+  const char *filepath = "/etc/udev/rules.d/99-battery-threshold.rules";
+  FILE *f = fopen(filepath, "w");
+  if (!f) {
+    fprintf(stderr, "Error al abrir %s para escritura: %s\n", filepath, strerror(errno));
+    return;
+  }
+
+  fprintf(f, "ACTION==\"add|change\", SUBSYSTEM==\"power_supply\", "
+             "KERNEL==\"BAT0\", ATTR{charge_control_end_threshold}=\"%d\"\n",
+          *max);
+  fclose(f);
+
+  char *args_reload[] = {"udevadm", "control", "--reload-rules", NULL};
+  if (run_cmd("udevadm", args_reload) != 0) {
+    fprintf(stderr, "Error al recargar reglas udev.\n");
+    return;
+  }
+
+  char *args_trigger[] = {"udevadm", "trigger", NULL};
+  if (run_cmd("udevadm", args_trigger) != 0) {
+    fprintf(stderr, "Error al disparar trigger udev.\n");
+    return;
+  }
+
+  printf("Udevadm exitoso\n");
 }
 
 void run_bat_health() {

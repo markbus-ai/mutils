@@ -3,32 +3,71 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
 
 void run_port_slayer(char *port) {
-  char comando[100];
-  sprintf(comando, "lsof -t -i:%s", port);
-
-  int status = system(comando);
-  if (status == -1) {
-    printf("Error fatal al ejecutar lsof: %s\n", strerror(errno));
+  int pipefd[2];
+  if (pipe(pipefd) == -1) {
+    perror("pipe");
     return;
   }
 
-  int exit_code = WEXITSTATUS(status);
-
-  if (exit_code != 0) {
-    printf("No se encontraron procesos que usen el puerto %s\n", port);
+  pid_t pid = fork();
+  if (pid == -1) {
+    perror("fork");
     return;
   }
 
-  printf("Proceso(s) encontrado(s). Liquidando...\n");
-  char kill_command[100];
-  sprintf(kill_command, "lsof -t -i:%s | xargs kill -9", port);
+  if (pid == 0) {
+    // Hijo: ejecuta lsof
+    close(pipefd[0]); // Cerramos lectura
+    if (dup2(pipefd[1], STDOUT_FILENO) == -1) {
+      perror("dup2");
+      exit(EXIT_FAILURE);
+    }
+    close(pipefd[1]);
 
-  int status_kill = system(kill_command);
-  if (status_kill == -1) {
-    printf("Error al ejecutar kill: %s\n", strerror(errno));
-  } else if (WEXITSTATUS(status_kill) == 0) {
-    printf("Proceso(s) eliminado(s) con el puerto %s\n", port);
+    char arg_port[32];
+    snprintf(arg_port, sizeof(arg_port), "-i:%s", port);
+    char *args[] = {"lsof", "-t", arg_port, NULL};
+    
+    execvp("lsof", args);
+    perror("execvp lsof");
+    exit(EXIT_FAILURE);
+  } else {
+    // Padre: lee PIDs y mata
+    close(pipefd[1]); // Cerramos escritura
+
+    FILE *stream = fdopen(pipefd[0], "r");
+    if (!stream) {
+      perror("fdopen");
+      close(pipefd[0]);
+      return;
+    }
+
+    char line[32];
+    int found = 0;
+    while (fgets(line, sizeof(line), stream)) {
+      found = 1;
+      pid_t target_pid = (pid_t)strtol(line, NULL, 10);
+      if (target_pid > 0) {
+        printf("Matando proceso PID: %d\n", target_pid);
+        if (kill(target_pid, SIGKILL) == -1) {
+            perror("kill");
+        }
+      }
+    }
+    fclose(stream);
+    
+    int status;
+    waitpid(pid, &status, 0);
+    
+    if (!found) {
+        printf("No se encontraron procesos en el puerto %s\n", port);
+    } else {
+        printf("Limpieza completada.\n");
+    }
   }
 }

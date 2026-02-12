@@ -11,4 +11,5 @@ void run_ping_check();
 void run_myip();
 void run_extract(const char *filename);
 void run_ocr();
+int run_cmd(const char *file, char *const argv[]);
 #endif
