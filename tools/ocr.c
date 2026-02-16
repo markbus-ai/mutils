@@ -9,8 +9,6 @@
 
 #define CHUNK_SIZE 4096
 
-// --- utilidades de memoria y clipboard ---
-
 void *safe_realloc(void *ptr, size_t size) {
   void *new_ptr = realloc(ptr, size);
   if (!new_ptr) {
@@ -58,7 +56,6 @@ void copiar_al_clipboard(const char *texto) {
 void run_ocr() {
   int pipe_slurp[2], pipe_grim[2];
 
-  // 1. slurp
   if (pipe(pipe_slurp) == -1) {
     perror("pipe slurp");
     return;
@@ -90,7 +87,6 @@ void run_ocr() {
   close(pipe_slurp[0]);
   waitpid(pid_slurp, NULL, 0);
 
-  // 2. grim a ram
   if (pipe(pipe_grim) == -1) {
     perror("pipe grim");
     return;
@@ -111,7 +107,6 @@ void run_ocr() {
   }
   close(pipe_grim[1]);
 
-  // 3. buffer dinámico para el png
   size_t capacity = CHUNK_SIZE, size = 0;
   unsigned char *buffer = malloc(capacity);
   if (!buffer) {
@@ -130,7 +125,6 @@ void run_ocr() {
   close(pipe_grim[0]);
   waitpid(pid_grim, NULL, 0);
 
-  // 4. tesseract ocr
   TessBaseAPI *handle = TessBaseAPICreate();
   if (TessBaseAPIInit3(handle, NULL, "spa") != 0) {
     fprintf(stderr, "error: falla en init tesseract\n");

@@ -21,8 +21,7 @@ void run_port_slayer(char *port) {
   }
 
   if (pid == 0) {
-    // Hijo: ejecuta lsof
-    close(pipefd[0]); // Cerramos lectura
+    close(pipefd[0]);
     if (dup2(pipefd[1], STDOUT_FILENO) == -1) {
       perror("dup2");
       exit(EXIT_FAILURE);
@@ -37,8 +36,7 @@ void run_port_slayer(char *port) {
     perror("execvp lsof");
     exit(EXIT_FAILURE);
   } else {
-    // Padre: lee PIDs y mata
-    close(pipefd[1]); // Cerramos escritura
+    close(pipefd[1]);
 
     FILE *stream = fdopen(pipefd[0], "r");
     if (!stream) {

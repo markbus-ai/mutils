@@ -23,9 +23,8 @@ void run_extract(const char *filename) {
 
   const char *tool = NULL;
   char *prog = NULL;
-  char *argv[5]; // Suficiente para los comandos usados
+  char *argv[5];
 
-  // --- GRUPO TAR (Prioridad Alta: extensiones compuestas) ---
   if (ends_with(filename, ".tar.gz") || ends_with(filename, ".tgz")) {
     prog = "tar";
     argv[0] = "tar"; argv[1] = "-xzvf"; argv[2] = (char *)filename; argv[3] = NULL;
@@ -44,26 +43,21 @@ void run_extract(const char *filename) {
     tool = "tar";
   }
 
-  // --- GRUPO COMPRIMIDOS COMUNES ---
   else if (ends_with(filename, ".zip") || ends_with(filename, ".jar") ||
            ends_with(filename, ".war")) {
-    // .jar y .war son zips glorificados
     prog = "unzip";
     argv[0] = "unzip"; argv[1] = (char *)filename; argv[2] = NULL;
     tool = "unzip";
   } else if (ends_with(filename, ".rar")) {
-    // Requiere 'unrar' instalado (sudo apt install unrar)
     prog = "unrar";
     argv[0] = "unrar"; argv[1] = "x"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "unrar";
   } else if (ends_with(filename, ".7z")) {
-    // Requiere 'p7zip-full'
     prog = "7z";
     argv[0] = "7z"; argv[1] = "x"; argv[2] = (char *)filename; argv[3] = NULL;
     tool = "7zip";
   }
 
-  // --- GRUPO ARCHIVOS ÚNICOS (No son carpetas empaquetadas) ---
   else if (ends_with(filename, ".gz")) {
     prog = "gunzip";
     argv[0] = "gunzip"; argv[1] = "-k"; argv[2] = (char *)filename; argv[3] = NULL;
@@ -82,14 +76,13 @@ void run_extract(const char *filename) {
     tool = "uncompress";
   }
 
-  // --- EJECUCIÓN ---
   if (prog) {
     printf("Extrayendo [%s] usando %s...\n", filename, tool);
     int status = run_cmd(prog, argv);
 
     if (status != 0) {
-      printf("Falló la extracción. ¿Tenés instalado '%s'?\n", tool);
-      // Hint específico para herramientas no standard
+      printf("❌ Falló la extracción. Revisá el mensaje de error de arriba.\n");
+      printf("   (Asegurate de que '%s' esté instalado y el archivo no esté corrupto)\n", tool);
       if (strcmp(tool, "unrar") == 0)
         printf("   Tip: sudo pacman -S unrar\n");
       if (strcmp(tool, "7zip") == 0)

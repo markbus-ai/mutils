@@ -45,7 +45,6 @@ void run_bat_health() {
   FILE *f_now, *f_orig;
   char buf_now[32], buf_orig[32];
 
-  // Abrimos ambos archivos
   f_now = fopen("/sys/class/power_supply/BAT0/charge_full", "r");
   f_orig = fopen("/sys/class/power_supply/BAT0/charge_full_design", "r");
 
@@ -65,13 +64,11 @@ void run_bat_health() {
   fclose(f_now);
   fclose(f_orig);
 
-  // Usamos strtol correctamente: string, endptr (NULL si no validamos), base 10
   long current_max = strtol(buf_now, NULL, 10);
   long design_max = strtol(buf_orig, NULL, 10);
 
   if (design_max == 0)
     printf("0.0");
 
-  // Salud = (capacidad_actual / capacidad_original) * 100
   printf("Salud: %.2f%%\n", ((float)current_max / (float)design_max) * 100.0f);
 }
