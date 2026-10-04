@@ -3,16 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Helper para comparar el final del string (case insensitive sería ideal,
-// pero en Linux las extensiones suelen ser minúsculas. Lo mantenemos simple).
-int ends_with(const char *str, const char *suffix) {
+// Helper para comparar si un string termina con un sufijo usando una implementación case-insensitive
+static int ends_with(const char *str, const char *suffix) {
   if (!str || !suffix)
     return 0;
   size_t len_str = strlen(str);
   size_t len_suffix = strlen(suffix);
   if (len_suffix > len_str)
     return 0;
-  return strcmp(str + len_str - len_suffix, suffix) == 0;
+  return mutils_strcasecmp(str + len_str - len_suffix, suffix) == 0;
 }
 
 void run_extract(const char *filename) {
@@ -83,9 +82,9 @@ void run_extract(const char *filename) {
     if (status != 0) {
       printf("❌ Falló la extracción. Revisá el mensaje de error de arriba.\n");
       printf("   (Asegurate de que '%s' esté instalado y el archivo no esté corrupto)\n", tool);
-      if (strcmp(tool, "unrar") == 0)
+      if (mutils_strcasecmp(tool, "unrar") == 0)
         printf("   Tip: sudo pacman -S unrar\n");
-      if (strcmp(tool, "7zip") == 0)
+      if (mutils_strcasecmp(tool, "7zip") == 0)
         printf("    Tip:  sudo pacman -S p7zip-full\n");
     } else {
       printf("✅ Listo.\n");

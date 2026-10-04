@@ -10,6 +10,9 @@ void run_env_check();
 void run_ping_check();
 void run_myip();
 void run_extract(const char *filename);
+void run_compress(const char *filename, const char *output);
 void run_ocr();
 int run_cmd(const char *file, char *const argv[]);
+int run_cmd_redirect(const char *file, char *const argv[], const char *out_path);
+int mutils_strcasecmp(const char *s1, const char *s2); // implementacion de strcmp que ignora mayúsculas y minúsculas
 #endif

@@ -1,3 +1,4 @@
+#include "../mutils.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,7 +35,7 @@ void add_key(const char *new_key) {
 int has_key(const char *target) {
   KeyNode *curr = head;
   while (curr) {
-    if (strcmp(curr->key, target) == 0)
+    if (mutils_strcasecmp(curr->key, target) == 0)
       return 1;
     curr = curr->next;
   }

@@ -17,28 +17,28 @@ int tiene_extension(const char *nombre, const char *ext) {
   const char *dot = strrchr(nombre, '.');
   if (!dot || dot == nombre)
     return 0;
-  return strcmp(dot, ext) == 0;
+  return mutils_strcasecmp(dot, ext) == 0;
 }
 
 int is_trash(const char *nombre, int es_directorio) {
   if (es_directorio) {
-    if (strcmp(nombre, "__pycache__") == 0) return 1;
-    if (strcmp(nombre, ".pytest_cache") == 0) return 1;
-    if (strcmp(nombre, ".mypy_cache") == 0) return 1;
-    if (strcmp(nombre, ".venv") == 0) return 1;
-    if (strcmp(nombre, "build") == 0) return 1;
-    if (strcmp(nombre, "dist") == 0) return 1;
-    if (strcmp(nombre, "node_modules") == 0) return 1;
-    if (strcmp(nombre, ".npm") == 0) return 1;
-    if (strcmp(nombre, "CMakeFiles") == 0) return 1;
-    if (strcmp(nombre, ".cache") == 0) return 1;
+    if (mutils_strcasecmp(nombre, "__pycache__") == 0) return 1;
+    if (mutils_strcasecmp(nombre, ".pytest_cache") == 0) return 1;
+    if (mutils_strcasecmp(nombre, ".mypy_cache") == 0) return 1;
+    if (mutils_strcasecmp(nombre, ".venv") == 0) return 1;
+    if (mutils_strcasecmp(nombre, "build") == 0) return 1;
+    if (mutils_strcasecmp(nombre, "dist") == 0) return 1;
+    if (mutils_strcasecmp(nombre, "node_modules") == 0) return 1;
+    if (mutils_strcasecmp(nombre, ".npm") == 0) return 1;
+    if (mutils_strcasecmp(nombre, "CMakeFiles") == 0) return 1;
+    if (mutils_strcasecmp(nombre, ".cache") == 0) return 1;
   } else {
     if (tiene_extension(nombre, ".pyc")) return 1;
     if (tiene_extension(nombre, ".pyo")) return 1;
     if (tiene_extension(nombre, ".log")) return 1;
     if (tiene_extension(nombre, ".o")) return 1;
     if (tiene_extension(nombre, ".out")) return 1;
-    if (strcmp(nombre, ".DS_Store") == 0) return 1;
+    if (mutils_strcasecmp(nombre, ".DS_Store") == 0) return 1;
   }
   return 0;
 }
@@ -60,7 +60,7 @@ void scan_and_nuke(char *path) {
   if (!d) return;
 
   while ((entry = readdir(d)) != NULL) {
-    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+    if (mutils_strcasecmp(entry->d_name, ".") == 0 || mutils_strcasecmp(entry->d_name, "..") == 0)
       continue;
 
     snprintf(ruta_completa, sizeof(ruta_completa), "%s/%s", path, entry->d_name);

@@ -15,66 +15,80 @@ void print_help() {
   printf("  ip                  Muestra la dirección IP pública.\n");
   printf("  ping                Diagnóstico de red (DNS, latencia, jitter, pérdida de paquetes).\n");
   printf("  x <archivo>         Extractor inteligente para varios formatos (.tar, .zip, .rar, etc.).\n");
+  printf("  c <archivo> [-o out] Comprime en varios formatos (.tar.gz, .zip, .7z, etc.).\n");
   printf("  ocr                 Extracción de texto de la pantalla usando OCR (Wayland).\n");
   printf("  --help, -h          Muestra este mensaje de ayuda.\n");
 }
 
 int main(int argc, char *argv[]) {
-  if (argc < 2 || strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
+  if (argc < 2 || mutils_strcasecmp(argv[1], "--help") == 0 || mutils_strcasecmp(argv[1], "-h") == 0) {
     print_help();
     return 0;
   }
 
-  if (strcmp(argv[1], "port") == 0) {
-    if (argc < 3 || strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0) {
+  if (mutils_strcasecmp(argv[1], "port") == 0) {
+    if (argc < 3 || mutils_strcasecmp(argv[2], "--help") == 0 || mutils_strcasecmp(argv[2], "-h") == 0) {
       printf("Uso: mutils port <puerto>\n");
       return 0;
     }
     run_port_slayer(argv[2]);
-  } else if (strcmp(argv[1], "bat") == 0) {
-    if (argc < 3 || strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0) {
+  } else if (mutils_strcasecmp(argv[1], "bat") == 0) {
+    if (argc < 3 || mutils_strcasecmp(argv[2], "--help") == 0 || mutils_strcasecmp(argv[2], "-h") == 0) {
       printf("Uso: mutils bat <porcentaje|health>\n");
       return 0;
     }
-    if (strcmp(argv[2], "health") == 0) {
+    if (mutils_strcasecmp(argv[2], "health") == 0) {
       run_bat_health();
       return 0;
     }
     int max = atoi(argv[2]);
     run_bat_threshold(&max);
-  } else if (strcmp(argv[1], "nuke") == 0) {
-    if (argc < 3 || strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0) {
+  } else if (mutils_strcasecmp(argv[1], "nuke") == 0) {
+    if (argc < 3 || mutils_strcasecmp(argv[2], "--help") == 0 || mutils_strcasecmp(argv[2], "-h") == 0) {
       printf("Uso: mutils nuke <path>\n");
       return 0;
     }
 
     run_nuke_dev(argv[2]);
-  } else if (strcmp(argv[1], "env") == 0) {
-    if (argc >= 3 && (strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0)) {
+  } else if (mutils_strcasecmp(argv[1], "env") == 0) {
+    if (argc >= 3 && (mutils_strcasecmp(argv[2], "--help") == 0 || mutils_strcasecmp(argv[2], "-h") == 0)) {
       printf("Uso: mutils env\n");
       return 0;
     }
     run_env_check();
-  } else if (strcmp(argv[1], "ip") == 0) {
-    if (argc >= 3 && (strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0)) {
+  } else if (mutils_strcasecmp(argv[1], "ip") == 0) {
+    if (argc >= 3 && (mutils_strcasecmp(argv[2], "--help") == 0 || mutils_strcasecmp(argv[2], "-h") == 0)) {
       printf("Uso: mutils ip\n");
       return 0;
     }
     run_myip();
-  } else if (strcmp(argv[1], "ping") == 0) {
-    if (argc >= 3 && (strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0)) {
+  } else if (mutils_strcasecmp(argv[1], "ping") == 0) {
+    if (argc >= 3 && (mutils_strcasecmp(argv[2], "--help") == 0 || mutils_strcasecmp(argv[2], "-h") == 0)) {
       printf("Uso: mutils ping\n");
       return 0;
     }
     run_ping_check();
-  } else if (strcmp(argv[1], "x") == 0) {
-    if (argc < 3 || strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0) {
+  } else if (mutils_strcasecmp(argv[1], "x") == 0) {
+    if (argc < 3 || mutils_strcasecmp(argv[2], "--help") == 0 || mutils_strcasecmp(argv[2], "-h") == 0) {
       printf("Uso: mutils x <archivo>\n");
       return 0;
     }
     run_extract(argv[2]);
-  } else if (strcmp(argv[1], "ocr") == 0) {
-    if (argc >= 3 && (strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0)) {
+    
+  } else if (mutils_strcasecmp(argv[1], "c") == 0) {
+    if (argc < 3 || mutils_strcasecmp(argv[2], "--help") == 0 || mutils_strcasecmp(argv[2], "-h") == 0) {
+      printf("Uso: mutils c <archivo> [-o <salida>]\n");
+      return 0;
+    }
+
+    const char *output = NULL;
+    if (argc >= 5 && (mutils_strcasecmp(argv[3], "-o") == 0 || mutils_strcasecmp(argv[3], "--output") == 0)) {
+      output = argv[4];
+    }
+    run_compress(argv[2], output);
+
+  } else if (mutils_strcasecmp(argv[1], "ocr") == 0) {
+    if (argc >= 3 && (mutils_strcasecmp(argv[2], "--help") == 0 || mutils_strcasecmp(argv[2], "-h") == 0)) {
       printf("Uso: mutils ocr\n");
       return 0;
     }
